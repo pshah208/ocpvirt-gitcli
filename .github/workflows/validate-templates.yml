@@ -1,0 +1,79 @@
+---
+name: Validate Templates
+
+# Renders each example vars file through scripts/render.sh and checks that
+# the output is valid YAML. The openshift-install manifest step is run with
+# continue-on-error because it requires a valid pull secret.
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  render-and-validate:
+    name: Render templates and validate YAML
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          pip install yamllint
+          sudo apt-get install -y gettext-base  # provides envsubst
+
+      - name: Make scripts executable
+        run: chmod +x scripts/*.sh scripts/platforms/*.sh scripts/lib/*.sh
+
+      - name: Render aws-small example
+        run: |
+          export VARS_FILE=examples/aws-small.vars.yaml
+          bash scripts/render.sh \
+            templates/install-config/aws.install-config.yaml.tmpl \
+            /tmp/aws-small-install-config.yaml
+          yamllint /tmp/aws-small-install-config.yaml
+
+      - name: Render azure-medium example
+        run: |
+          export VARS_FILE=examples/azure-medium.vars.yaml
+          bash scripts/render.sh \
+            templates/install-config/azure.install-config.yaml.tmpl \
+            /tmp/azure-medium-install-config.yaml
+          yamllint /tmp/azure-medium-install-config.yaml
+
+      - name: Render vsphere-cnv-lab example
+        run: |
+          export VARS_FILE=examples/vsphere-cnv-lab.vars.yaml
+          bash scripts/render.sh \
+            templates/install-config/vsphere.install-config.yaml.tmpl \
+            /tmp/vsphere-cnv-lab-install-config.yaml
+          yamllint /tmp/vsphere-cnv-lab-install-config.yaml
+
+      - name: Render baremetal-3node-compact example
+        run: |
+          export VARS_FILE=examples/baremetal-3node-compact.vars.yaml
+          bash scripts/render.sh \
+            templates/install-config/baremetal.install-config.yaml.tmpl \
+            /tmp/baremetal-3node-compact-install-config.yaml
+          yamllint /tmp/baremetal-3node-compact-install-config.yaml
+
+      - name: Validate CNV manifests
+        run: yamllint templates/cnv/*.yaml
+
+      - name: Validate storage manifests
+        run: yamllint templates/storage/*.yaml
+
+      - name: Validate networking manifests
+        run: yamllint templates/networking/*.yaml
+
+      - name: openshift-install dry-run (schema check)
+        # This step requires a real pull secret; mark continue-on-error so CI
+        # still passes without Red Hat credentials.
+        continue-on-error: true
+        run: |
+          TMPDIR=$(mktemp -d)
+          cp /tmp/aws-small-install-config.yaml "${TMPDIR}/install-config.yaml"
+          openshift-install create manifests --dir "${TMPDIR}" 2>&1 || true
+          rm -rf "${TMPDIR}"

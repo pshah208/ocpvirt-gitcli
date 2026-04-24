@@ -1,0 +1,32 @@
+---
+# HostPath Provisioner (HPP) — lightweight RWO storage for lab / SNO environments.
+# Does NOT support RWX; live migration is not possible with HPP alone.
+# Reference: https://docs.openshift.com/container-platform/latest/virt/storage/
+#   virt-configuring-local-storage-with-hpp.html
+apiVersion: hostpathprovisioner.kubevirt.io/v1beta1
+kind: HostPathProvisioner
+metadata:
+  name: hostpath-provisioner
+spec:
+  imagePullPolicy: IfNotPresent
+  storagePools:
+    - name: local
+      # Path on each node where VM disk images will be stored.
+      # Ensure sufficient free space before enabling.
+      path: /var/hpvolumes
+  workload:
+    nodeSelector:
+      kubernetes.io/os: linux
+---
+# StorageClass backed by the HostPath Provisioner
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: hostpath-csi
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: kubevirt.io.hostpath-provisioner
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  storagePool: local

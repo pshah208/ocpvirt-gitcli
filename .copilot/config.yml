@@ -1,0 +1,88 @@
+---
+# Copilot CLI configuration for ocpvirt-gitcli
+# Skills and prompts are discoverable by `gh copilot` and IDE integrations.
+version: 1
+
+skills:
+  - name: deploy-openshift
+    path: .copilot/skills/deploy-openshift.md
+    description: >-
+      Guided, step-by-step deployment of Red Hat OpenShift Container Platform
+      on a chosen target platform (AWS, Azure, GCP, vSphere, bare-metal, KVM).
+
+  - name: deploy-openshift-virtualization
+    path: .copilot/skills/deploy-openshift-virtualization.md
+    description: >-
+      Install and configure OpenShift Virtualization (CNV) on an existing
+      OpenShift cluster, including storage, networking and a test VM.
+
+  - name: verify-prerequisites
+    path: .copilot/skills/verify-prerequisites.md
+    description: >-
+      Check all platform prerequisites before attempting an install — CLI
+      tools, cloud quotas, DNS, pull secret, SSH key, and CNV-specific checks.
+
+  - name: size-cluster
+    path: .copilot/skills/size-cluster.md
+    description: >-
+      Calculate recommended control-plane and worker node counts, vCPU, RAM
+      and disk based on target workload and CNV VM density requirements.
+
+  - name: generate-install-config
+    path: .copilot/skills/generate-install-config.md
+    description: >-
+      Render the correct install-config.yaml (and optionally agent-config.yaml)
+      from templates using the values in cluster.vars.yaml.
+
+  - name: platform-aws
+    path: .copilot/skills/platform-aws.md
+    description: AWS-specific prerequisites, IPI steps and CNV caveats.
+
+  - name: platform-azure
+    path: .copilot/skills/platform-azure.md
+    description: Azure-specific prerequisites, IPI steps and CNV caveats.
+
+  - name: platform-gcp
+    path: .copilot/skills/platform-gcp.md
+    description: GCP-specific prerequisites, IPI steps and CNV caveats.
+
+  - name: platform-vsphere
+    path: .copilot/skills/platform-vsphere.md
+    description: vSphere/vCenter prerequisites, IPI steps and CNV caveats.
+
+  - name: platform-baremetal-agent
+    path: .copilot/skills/platform-baremetal-agent.md
+    description: >-
+      Bare-metal Agent-based Installer prerequisites and deployment steps
+      including Rendezvous IP, VIPs and host BMC configuration.
+
+  - name: platform-kvm-libvirt
+    path: .copilot/skills/platform-kvm-libvirt.md
+    description: >-
+      KVM/libvirt (developer/lab) platform prerequisites and user-provisioned
+      infrastructure (UPI) deployment steps.
+
+prompts:
+  - name: intake
+    path: .copilot/prompts/intake-questionnaire.md
+    description: >-
+      Interactive questionnaire that collects all cluster parameters and
+      produces a cluster.vars.yaml ready for template rendering.
+
+  - name: prereq-check
+    path: .copilot/prompts/prereq-check.md
+    description: >-
+      Prompt Copilot to run preflight checks and summarise any gaps before
+      proceeding with an install.
+
+  - name: cnv-post-install
+    path: .copilot/prompts/cnv-post-install.md
+    description: >-
+      Post-install checklist and configuration steps for OpenShift
+      Virtualization after the HyperConverged Operator is ready.
+
+  - name: troubleshoot
+    path: .copilot/prompts/troubleshoot.md
+    description: >-
+      Guide Copilot through common OpenShift and CNV failure modes,
+      log-gathering commands and resolution steps.

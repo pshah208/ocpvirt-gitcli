@@ -1,0 +1,98 @@
+# Agent-config.yaml template for Agent-based Installer
+# Render with: VARS_FILE=<vars.yaml> bash scripts/render.sh <this-file> <output>
+# Variables resolved by envsubst — see scripts/render.sh
+# Reference: https://docs.openshift.com/container-platform/latest/installing/installing_with_agent_based_installer/preparing-to-install-with-agent-based-installer.html
+---
+apiVersion: v1beta1
+kind: AgentConfig
+metadata:
+  name: ${CLUSTER_NAME}
+
+# The rendezvous host coordinates the bootstrap process.
+# Must be the IP of one of the hosts listed below.
+rendezvousIP: ${RENDEZVOUS_IP}
+
+# Host definitions — add one entry per node.
+# MAC addresses are used to match discovered hosts to their intended roles.
+hosts:
+  - hostname: master-0
+    role: master
+    interfaces:
+      - name: eno1
+        macAddress: "${MASTER_0_MAC}"
+    networkConfig:
+      interfaces:
+        - name: eno1
+          type: ethernet
+          state: up
+          ipv4:
+            enabled: true
+            dhcp: true
+    rootDeviceHints:
+      deviceName: /dev/sda
+    bmc:
+      address: ${MASTER_0_BMC_ADDRESS}
+      username: ${MASTER_0_BMC_USER}
+      passwordCredentials:
+        # Store BMC password in .secrets/bmc-master-0.txt (gitignored)
+        name: ${MASTER_0_BMC_PASS}
+      disableCertificateVerification: false
+
+  - hostname: master-1
+    role: master
+    interfaces:
+      - name: eno1
+        macAddress: "${MASTER_1_MAC}"
+    networkConfig:
+      interfaces:
+        - name: eno1
+          type: ethernet
+          state: up
+          ipv4:
+            enabled: true
+            dhcp: true
+    rootDeviceHints:
+      deviceName: /dev/sda
+    bmc:
+      address: ${MASTER_1_BMC_ADDRESS}
+      username: ${MASTER_1_BMC_USER}
+      passwordCredentials:
+        name: ${MASTER_1_BMC_PASS}
+      disableCertificateVerification: false
+
+  - hostname: master-2
+    role: master
+    interfaces:
+      - name: eno1
+        macAddress: "${MASTER_2_MAC}"
+    networkConfig:
+      interfaces:
+        - name: eno1
+          type: ethernet
+          state: up
+          ipv4:
+            enabled: true
+            dhcp: true
+    rootDeviceHints:
+      deviceName: /dev/sda
+    bmc:
+      address: ${MASTER_2_BMC_ADDRESS}
+      username: ${MASTER_2_BMC_USER}
+      passwordCredentials:
+        name: ${MASTER_2_BMC_PASS}
+      disableCertificateVerification: false
+
+  # Add worker entries below if worker_count > 0:
+  # - hostname: worker-0
+  #   role: worker
+  #   interfaces:
+  #     - name: eno1
+  #       macAddress: "${WORKER_0_MAC}"
+  #   rootDeviceHints:
+  #     deviceName: /dev/sda
+  #   bmc:
+  #     address: ${WORKER_0_BMC_ADDRESS}
+  #     username: ${WORKER_0_BMC_USER}
+  #     passwordCredentials:
+  #       name: ${WORKER_0_BMC_PASS}
+  #     disableCertificateVerification: false

@@ -1,0 +1,89 @@
+# AWS install-config.yaml template
+# Render with: VARS_FILE=<vars.yaml> bash scripts/render.sh <this-file> <output>
+# Variables resolved by envsubst — see scripts/render.sh
+# Reference: https://docs.openshift.com/container-platform/latest/installing/installing_aws/
+---
+apiVersion: v1
+baseDomain: ${BASE_DOMAIN}
+metadata:
+  name: ${CLUSTER_NAME}
+
+# Network configuration
+networking:
+  clusterNetwork:
+    - cidr: ${CLUSTER_CIDR}
+      hostPrefix: 23
+  serviceNetwork:
+    - ${SERVICE_CIDR}
+  machineNetwork:
+    - cidr: ${MACHINE_CIDR}
+  networkType: ${NETWORK_TYPE}
+
+# Control-plane configuration
+controlPlane:
+  name: master
+  replicas: ${CP_COUNT}
+  platform:
+    aws:
+      type: ${AWS_CP_INSTANCE_TYPE}
+      rootVolume:
+        iops: 4000
+        size: ${CP_DISK}
+        type: io1
+      zones:
+        - ${AWS_ZONE_A}
+        - ${AWS_ZONE_B}
+        - ${AWS_ZONE_C}
+
+# Worker (compute) configuration
+compute:
+  - name: worker
+    replicas: ${WORKER_COUNT}
+    platform:
+      aws:
+        type: ${AWS_WORKER_INSTANCE_TYPE}
+        rootVolume:
+          iops: 2000
+          size: ${WORKER_DISK}
+          type: io1
+        zones:
+          - ${AWS_ZONE_A}
+          - ${AWS_ZONE_B}
+          - ${AWS_ZONE_C}
+
+# AWS platform configuration
+platform:
+  aws:
+    region: ${AWS_REGION}
+    # Uncomment to use an existing VPC:
+    # vpc:
+    #   id: ${AWS_VPC_ID}
+    #   subnets:
+    #     - ${AWS_SUBNET_A}
+    #     - ${AWS_SUBNET_B}
+    #     - ${AWS_SUBNET_C}
+    # userTags:
+    #   Environment: production
+    #   Team: platform
+
+# Credentials mode: mint (default) | passthrough | Manual (STS)
+# credentialsMode: Mint
+
+# Pull secret — loaded from .secrets/pull-secret.json at render time
+pullSecret: '${PULL_SECRET}'
+
+# SSH public key — loaded from file at render time
+sshKey: |
+  ${SSH_KEY}
+
+# Proxy (uncomment if required)
+# proxy:
+#   httpProxy: ${HTTP_PROXY}
+#   httpsProxy: ${HTTPS_PROXY}
+#   noProxy: ${NO_PROXY}
+
+# Additional trust bundle (for custom CA or disconnected install)
+# additionalTrustBundle: |
+#   -----BEGIN CERTIFICATE-----
+#   <your-CA-cert>
+#   -----END CERTIFICATE-----

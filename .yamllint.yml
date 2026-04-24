@@ -1,0 +1,33 @@
+---
+# yamllint configuration
+# Reference: https://yamllint.readthedocs.io/en/stable/configuration.html
+extends: default
+
+rules:
+  # Allow long lines in templates (URLs, comments)
+  line-length:
+    max: 120
+    level: warning
+
+  # Allow both true/false and yes/no
+  truthy:
+    allowed-values: ["true", "false", "yes", "no"]
+    check-keys: false
+
+  # Comments: require 1 space after #
+  comments:
+    min-spaces-from-content: 1
+
+  # Indentation: 2 spaces
+  indentation:
+    spaces: 2
+    indent-sequences: true
+    check-multi-line-strings: false
+
+  # Document start (---) is optional
+  document-start: disable
+
+ignore: |
+  build/
+  .secrets/
+  node_modules/

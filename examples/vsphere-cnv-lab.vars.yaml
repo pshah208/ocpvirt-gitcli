@@ -1,0 +1,50 @@
+# vsphere-cnv-lab.vars.yaml — vSphere lab cluster with OpenShift Virtualization
+# Render: VARS_FILE=examples/vsphere-cnv-lab.vars.yaml bash scripts/render.sh \
+#           templates/install-config/vsphere.install-config.yaml.tmpl \
+#           /tmp/vsphere-cnv-lab/install-config.yaml
+---
+goal: ocp+cnv
+platform: vsphere
+topology: compact
+ocp_version: "4.16"
+cluster_name: cnv-lab
+base_domain: lab.example.com
+
+cp_count: 3
+cp_vcpu: 8
+cp_ram_gib: 32
+cp_disk: 120
+
+worker_count: 3
+worker_vcpu: 16
+worker_ram_gib: 64
+worker_disk: 120
+worker_cnv_dedicated: true
+
+cluster_cidr: 10.128.0.0/14
+service_cidr: 172.30.0.0/16
+machine_cidr: 192.168.100.0/24
+network_type: OVNKubernetes
+mtu: 1450
+
+vcenter_fqdn: vcenter.lab.example.com
+vcenter_username: administrator@vsphere.local
+vsphere_datacenter: Datacenter
+vsphere_cluster: Cluster1
+vsphere_datastore: vsanDatastore
+vsphere_network: VM Network
+vsphere_folder: /Datacenter/vm/ocp4
+api_vip: 192.168.100.10
+ingress_vip: 192.168.100.11
+
+load_balancer: metallb
+storage: odf
+
+# Secret paths (never inline values here)
+pull_secret_path: .secrets/pull-secret.json
+ssh_key_path: ~/.ssh/id_rsa.pub
+
+cnv_enabled: true
+cnv_rwx_storage_class: ocs-storagecluster-cephfs
+cnv_install_nmstate: true
+cnv_install_metallb: true

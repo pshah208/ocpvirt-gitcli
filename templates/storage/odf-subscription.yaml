@@ -1,0 +1,33 @@
+---
+# OpenShift Data Foundation (ODF) Operator Subscription
+# ODF provides Ceph-based RWO (RBD) and RWX (CephFS) storage classes.
+# RWX is required for live VM migration.
+# Reference: https://docs.openshift.com/container-platform/latest/storage/persistent_storage/persistent_storage_local/
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-storage
+  labels:
+    openshift.io/cluster-monitoring: "true"
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: openshift-storage-operatorgroup
+  namespace: openshift-storage
+spec:
+  targetNamespaces:
+    - openshift-storage
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: odf-operator
+  namespace: openshift-storage
+spec:
+  channel: "stable-4.16"
+  installPlanApproval: Automatic
+  name: odf-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace

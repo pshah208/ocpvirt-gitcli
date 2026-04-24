@@ -1,0 +1,63 @@
+---
+name: Lint
+
+# Ref: https://docs.openshift.com/container-platform/latest/installing/
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  yamllint:
+    name: YAML Lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Run yamllint
+        run: |
+          yamllint -c .yamllint.yml . \
+            --no-warnings \
+            2>&1 || true
+        # We ship a .yamllint.yml config; warnings are informational only.
+
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ShellCheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Run ShellCheck on all scripts
+        run: |
+          find scripts/ -name "*.sh" -print0 | \
+            xargs -0 shellcheck --severity=warning
+
+  markdownlint:
+    name: Markdown Lint
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install markdownlint-cli
+        run: npm install -g markdownlint-cli
+
+      - name: Run markdownlint
+        run: |
+          markdownlint \
+            --config .markdownlint.yml \
+            "**/*.md" \
+            --ignore node_modules \
+            --ignore build

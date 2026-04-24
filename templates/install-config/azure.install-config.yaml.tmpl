@@ -1,0 +1,80 @@
+# Azure install-config.yaml template
+# Render with: VARS_FILE=<vars.yaml> bash scripts/render.sh <this-file> <output>
+# Variables resolved by envsubst — see scripts/render.sh
+# Reference: https://docs.openshift.com/container-platform/latest/installing/installing_azure/
+---
+apiVersion: v1
+baseDomain: ${BASE_DOMAIN}
+metadata:
+  name: ${CLUSTER_NAME}
+
+# Network configuration
+networking:
+  clusterNetwork:
+    - cidr: ${CLUSTER_CIDR}
+      hostPrefix: 23
+  serviceNetwork:
+    - ${SERVICE_CIDR}
+  machineNetwork:
+    - cidr: ${MACHINE_CIDR}
+  networkType: ${NETWORK_TYPE}
+
+# Control-plane configuration
+controlPlane:
+  name: master
+  replicas: ${CP_COUNT}
+  platform:
+    azure:
+      type: ${AZURE_CP_VM_SIZE}
+      osDisk:
+        diskSizeGB: ${CP_DISK}
+        diskType: Premium_LRS
+      # Enable Availability Zones (recommended)
+      zones:
+        - "1"
+        - "2"
+        - "3"
+
+# Worker (compute) configuration
+compute:
+  - name: worker
+    replicas: ${WORKER_COUNT}
+    platform:
+      azure:
+        # Use Dsv5/Esv5 for CNV workers (nested virt support)
+        type: ${AZURE_WORKER_VM_SIZE}
+        osDisk:
+          diskSizeGB: ${WORKER_DISK}
+          diskType: Premium_LRS
+        zones:
+          - "1"
+          - "2"
+          - "3"
+
+# Azure platform configuration
+platform:
+  azure:
+    # Resource group that contains the Azure DNS zone for baseDomain
+    baseDomainResourceGroupName: ${AZURE_DNS_RG}
+    region: ${AZURE_REGION}
+    # Uncomment to use an existing resource group:
+    # resourceGroupName: ${AZURE_RG}
+    # Uncomment for existing VNet:
+    # virtualNetwork: ${AZURE_VNET}
+    # controlPlaneSubnet: ${AZURE_CP_SUBNET}
+    # computeSubnet: ${AZURE_WORKER_SUBNET}
+    # networkResourceGroupName: ${AZURE_VNET_RG}
+    outboundType: Loadbalancer
+
+# Pull secret — loaded from .secrets/pull-secret.json at render time
+pullSecret: '${PULL_SECRET}'
+
+# SSH public key — loaded from file at render time
+sshKey: |
+  ${SSH_KEY}
+
+# Proxy (uncomment if required)
+# proxy:
+#   httpProxy: ${HTTP_PROXY}
+#   httpsProxy: ${HTTPS_PROXY}
+#   noProxy: ${NO_PROXY}

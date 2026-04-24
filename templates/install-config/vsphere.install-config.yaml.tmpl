@@ -1,0 +1,78 @@
+# vSphere install-config.yaml template
+# Render with: VARS_FILE=<vars.yaml> bash scripts/render.sh <this-file> <output>
+# Variables resolved by envsubst — see scripts/render.sh
+# Reference: https://docs.openshift.com/container-platform/latest/installing/installing_vsphere/
+---
+apiVersion: v1
+baseDomain: ${BASE_DOMAIN}
+metadata:
+  name: ${CLUSTER_NAME}
+
+# Network configuration
+networking:
+  clusterNetwork:
+    - cidr: ${CLUSTER_CIDR}
+      hostPrefix: 23
+  serviceNetwork:
+    - ${SERVICE_CIDR}
+  machineNetwork:
+    - cidr: ${MACHINE_CIDR}
+  networkType: ${NETWORK_TYPE}
+
+# Control-plane configuration
+controlPlane:
+  name: master
+  replicas: ${CP_COUNT}
+  platform:
+    vsphere:
+      cpus: ${CP_VCPU}
+      memoryMB: ${CP_RAM_MB}
+      osDisk:
+        diskSizeGB: ${CP_DISK}
+
+# Worker (compute) configuration
+compute:
+  - name: worker
+    replicas: ${WORKER_COUNT}
+    platform:
+      vsphere:
+        # For CNV workers: enable hardware virtualisation in vSphere after deploy
+        cpus: ${WORKER_VCPU}
+        memoryMB: ${WORKER_RAM_MB}
+        osDisk:
+          diskSizeGB: ${WORKER_DISK}
+
+# vSphere platform configuration
+platform:
+  vsphere:
+    vcenter: ${VCENTER_FQDN}
+    username: ${VCENTER_USERNAME}
+    password: ${VCENTER_PASSWORD}
+    datacenter: ${VSPHERE_DATACENTER}
+    defaultDatastore: ${VSPHERE_DATASTORE}
+    folder: ${VSPHERE_FOLDER}
+    network: ${VSPHERE_NETWORK}
+    cluster: ${VSPHERE_CLUSTER}
+    # Uncomment if using a specific resource pool:
+    # resourcePool: ${VSPHERE_RESOURCE_POOL}
+    # vCenter TLS thumbprint (get with openssl or govc):
+    # openssl s_client -connect vcenter:443 </dev/null 2>/dev/null \
+    #   | openssl x509 -fingerprint -sha256 -noout
+    # diskType: thin
+    apiVIPs:
+      - ${API_VIP}
+    ingressVIPs:
+      - ${INGRESS_VIP}
+
+# Pull secret — loaded from .secrets/pull-secret.json at render time
+pullSecret: '${PULL_SECRET}'
+
+# SSH public key — loaded from file at render time
+sshKey: |
+  ${SSH_KEY}
+
+# Proxy (uncomment if required)
+# proxy:
+#   httpProxy: ${HTTP_PROXY}
+#   httpsProxy: ${HTTPS_PROXY}
+#   noProxy: ${NO_PROXY}

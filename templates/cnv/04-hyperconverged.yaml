@@ -1,0 +1,51 @@
+---
+# Step 4: Create the HyperConverged CR to deploy all OpenShift Virtualization components.
+# This triggers the HCO to install KubeVirt, CDI, NetworkAddonsConfig, and related operators.
+# Reference: https://docs.openshift.com/container-platform/latest/virt/install/installing-virt.html
+apiVersion: hco.kubevirt.io/v1beta1
+kind: HyperConverged
+metadata:
+  name: kubevirt-hyperconverged
+  namespace: openshift-cnv
+  annotations:
+    # Deploy HCO components even if subscription has not yet reconciled
+    deployOVS: "false"
+spec:
+  # Feature gates
+  # withHostPassthroughCPU: true requires bare-metal nodes with host CPU flags
+  featureGates:
+    withHostPassthroughCPU: false
+    deployKubeSecondaryDNS: false
+    nonRoot: true
+
+  # Live migration defaults
+  # Reference: https://docs.openshift.com/container-platform/latest/virt/live_migration/
+  liveMigrationConfig:
+    # Maximum concurrent migrations cluster-wide
+    parallelMigrationsPerCluster: 5
+    # Maximum outbound migrations per node
+    parallelOutboundMigrationsPerNode: 2
+    # Timeout (seconds) per GiB of VM memory for live migration to complete
+    completionTimeoutPerGiB: 800
+    # Abort if no progress (in bytes) for this many seconds
+    progressTimeout: 150
+
+  # Workload update strategy used when upgrading KubeVirt components
+  workloadUpdateStrategy:
+    workloadUpdateMethods:
+      - LiveMigrate
+      - Evict
+    batchEvictionInterval: 1m
+    batchEvictionSize: 10
+
+  # Uncomment to customise the default storage class for DataVolumes:
+  # dataImportCronTemplates: []
+
+  # Certificate rotation
+  certConfig:
+    ca:
+      duration: 48h0m0s
+      renewBefore: 24h0m0s
+    server:
+      duration: 24h0m0s
+      renewBefore: 12h0m0s
