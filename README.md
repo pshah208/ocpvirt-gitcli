@@ -1,5 +1,5 @@
 # ocpvirt-gitcli
 
-GitHub Copilot CLI extension for interactively deploying Red Hat OpenShift and OpenShift Virtualization on-premise (VMware, bare-metal, KVM) or on hyperscalers (AWS, Azure, GCP).
+GitHub Copilot CLI extension for deploying OpenShift and OpenShift Virtualization across on-premise (VMs, bare-metal) and hyperscaler (AWS, Azure, GCP) infrastructures.
 
-Scaffolding in progress — see the open pull request.
+This repository is being scaffolded. See the initial pull request for the full project structure including Copilot CLI skills, prompts, instructions, templates, and documentation.
