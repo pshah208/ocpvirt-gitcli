@@ -1,0 +1,12 @@
+---
+# Step 2: Create the OperatorGroup for the CNV (OpenShift Virtualization) operator.
+# Scopes the operator to the openshift-cnv namespace only.
+# Reference: https://docs.openshift.com/container-platform/latest/virt/install/installing-virt.html
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: kubevirt-hyperconverged-group
+  namespace: openshift-cnv
+spec:
+  targetNamespaces:
+    - openshift-cnv

@@ -1,0 +1,38 @@
+---
+# NMState Operator — manages node network configuration declaratively.
+# Required for linux-bridge, bonding, and VLANs on CNV worker nodes.
+# Reference: https://docs.openshift.com/container-platform/latest/networking/k8s_nmstate/
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-nmstate
+  labels:
+    kubernetes.io/metadata.name: openshift-nmstate
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: openshift-nmstate
+  namespace: openshift-nmstate
+spec:
+  targetNamespaces:
+    - openshift-nmstate
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: kubernetes-nmstate-operator
+  namespace: openshift-nmstate
+spec:
+  channel: stable
+  installPlanApproval: Automatic
+  name: kubernetes-nmstate-operator
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+---
+# NMState instance — creates the NMState controller DaemonSet
+apiVersion: nmstate.io/v1
+kind: NMState
+metadata:
+  name: nmstate

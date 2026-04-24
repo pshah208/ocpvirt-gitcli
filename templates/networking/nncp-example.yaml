@@ -1,0 +1,31 @@
+---
+# NodeNetworkConfigurationPolicy (NNCP) example — creates a linux bridge on workers.
+# Apply this after the NMState Operator is ready.
+# Adjust 'desiredState' to match your actual NIC names and network topology.
+# Reference: https://docs.openshift.com/container-platform/latest/networking/
+#   k8s_nmstate/k8s-nmstate-updating-node-network-config.html
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: br-flat-worker
+spec:
+  # Target only worker nodes labelled as CNV workers
+  nodeSelector:
+    node-role.kubernetes.io/worker: ""
+  desiredState:
+    interfaces:
+      - name: br-flat
+        description: Linux bridge for flat VM network
+        type: linux-bridge
+        state: up
+        ipv4:
+          # The bridge itself does not need an IP in most scenarios.
+          # Set enabled: true and add dhcp: true or address if needed.
+          enabled: false
+        bridge:
+          options:
+            stp:
+              enabled: false
+          port:
+            # Replace 'ens3' with the actual secondary NIC name on your nodes.
+            - name: ens3

@@ -1,0 +1,39 @@
+# install-config.yaml for Agent-based Installer
+# Used alongside agent-config.yaml for bare-metal and KVM-libvirt deployments.
+# Render with: VARS_FILE=<vars.yaml> bash scripts/render.sh <this-file> <output>
+# Reference: https://docs.openshift.com/container-platform/latest/installing/installing_with_agent_based_installer/
+---
+apiVersion: v1
+baseDomain: ${BASE_DOMAIN}
+metadata:
+  name: ${CLUSTER_NAME}
+
+networking:
+  clusterNetwork:
+    - cidr: ${CLUSTER_CIDR}
+      hostPrefix: 23
+  serviceNetwork:
+    - ${SERVICE_CIDR}
+  machineNetwork:
+    - cidr: ${MACHINE_CIDR}
+  networkType: ${NETWORK_TYPE}
+
+controlPlane:
+  name: master
+  replicas: ${CP_COUNT}
+  platform: {}
+
+compute:
+  - name: worker
+    replicas: ${WORKER_COUNT}
+    platform: {}
+
+platform:
+  none: {}
+
+# Pull secret — loaded from .secrets/pull-secret.json at render time
+pullSecret: '${PULL_SECRET}'
+
+# SSH public key — loaded from file at render time
+sshKey: |
+  ${SSH_KEY}

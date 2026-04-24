@@ -1,0 +1,45 @@
+# azure-medium.vars.yaml — medium Azure cluster for production
+# Render: VARS_FILE=examples/azure-medium.vars.yaml bash scripts/render.sh \
+#           templates/install-config/azure.install-config.yaml.tmpl \
+#           /tmp/azure-medium/install-config.yaml
+---
+goal: ocp-only
+platform: azure
+topology: standard
+ocp_version: "4.16"
+cluster_name: ocp4-medium
+base_domain: example.com
+
+cp_count: 3
+cp_vcpu: 8
+cp_ram_gib: 32
+cp_disk: 120
+
+worker_count: 6
+worker_vcpu: 8
+worker_ram_gib: 32
+worker_disk: 128
+worker_cnv_dedicated: false
+
+cluster_cidr: 10.128.0.0/14
+service_cidr: 172.30.0.0/16
+machine_cidr: 10.0.0.0/16
+network_type: OVNKubernetes
+mtu: 1450
+
+azure_region: eastus
+azure_dns_rg: dns-resource-group
+azure_cp_vm_size: Standard_D8s_v5
+azure_worker_vm_size: Standard_D8s_v5
+
+load_balancer: cloud-managed
+storage: cloud
+
+# Secret paths (never inline values here)
+pull_secret_path: .secrets/pull-secret.json
+ssh_key_path: ~/.ssh/id_rsa.pub
+
+cnv_enabled: false
+cnv_rwx_storage_class: ""
+cnv_install_nmstate: false
+cnv_install_metallb: false

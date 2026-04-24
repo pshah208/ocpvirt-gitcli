@@ -1,0 +1,62 @@
+# baremetal-3node-compact.vars.yaml — 3-node compact bare-metal cluster
+# Render: VARS_FILE=examples/baremetal-3node-compact.vars.yaml bash scripts/render.sh \
+#           templates/install-config/baremetal.install-config.yaml.tmpl \
+#           /tmp/bm-compact/install-config.yaml
+---
+goal: ocp+cnv
+platform: baremetal-agent
+topology: compact
+ocp_version: "4.16"
+cluster_name: compact-bm
+base_domain: bare.example.com
+
+cp_count: 3
+cp_vcpu: 16
+cp_ram_gib: 64
+cp_disk: 120
+
+# 0 workers in compact topology — masters are schedulable
+worker_count: 0
+worker_vcpu: 0
+worker_ram_gib: 0
+worker_disk: 0
+worker_cnv_dedicated: false
+
+cluster_cidr: 10.128.0.0/14
+service_cidr: 172.30.0.0/16
+machine_cidr: 10.10.10.0/24
+network_type: OVNKubernetes
+mtu: 9000
+
+rendezvous_ip: 10.10.10.11
+api_vip: 10.10.10.10
+ingress_vip: 10.10.10.12
+
+# Host MACs and BMC addresses
+# Passwords are stored in .secrets/bmc-master-*.txt (gitignored)
+master_0_mac: "aa:bb:cc:dd:ee:01"
+master_0_bmc_address: "redfish+http://10.10.10.101/redfish/v1/Systems/1"
+master_0_bmc_user: admin
+master_0_bmc_pass: bmc-master-0
+
+master_1_mac: "aa:bb:cc:dd:ee:02"
+master_1_bmc_address: "redfish+http://10.10.10.102/redfish/v1/Systems/1"
+master_1_bmc_user: admin
+master_1_bmc_pass: bmc-master-1
+
+master_2_mac: "aa:bb:cc:dd:ee:03"
+master_2_bmc_address: "redfish+http://10.10.10.103/redfish/v1/Systems/1"
+master_2_bmc_user: admin
+master_2_bmc_pass: bmc-master-2
+
+load_balancer: metallb
+storage: lso
+
+# Secret paths (never inline values here)
+pull_secret_path: .secrets/pull-secret.json
+ssh_key_path: ~/.ssh/id_rsa.pub
+
+cnv_enabled: true
+cnv_rwx_storage_class: ""
+cnv_install_nmstate: true
+cnv_install_metallb: true

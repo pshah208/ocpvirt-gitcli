@@ -1,0 +1,9 @@
+---
+# Step 1: Create the openshift-cnv namespace
+# Reference: https://docs.openshift.com/container-platform/latest/virt/install/installing-virt.html
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openshift-cnv
+  labels:
+    openshift.io/cluster-monitoring: "true"

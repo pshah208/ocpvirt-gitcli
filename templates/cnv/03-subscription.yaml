@@ -1,0 +1,17 @@
+---
+# Step 3: Subscribe to the OpenShift Virtualization operator (kubevirt-hyperconverged).
+# The channel is updated per OCP release; use 'stable' to track the latest available.
+# Reference: https://docs.openshift.com/container-platform/latest/virt/install/installing-virt.html
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: hco-operatorhub
+  namespace: openshift-cnv
+spec:
+  source: redhat-operators
+  sourceNamespace: openshift-marketplace
+  name: kubevirt-hyperconverged
+  # Use the channel matching your OCP version, e.g. 'stable-4.16'
+  # 'stable' tracks the latest available channel for the current OCP release.
+  channel: "stable"
+  installPlanApproval: Automatic
