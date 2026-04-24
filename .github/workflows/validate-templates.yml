@@ -14,7 +14,8 @@ jobs:
   render-and-validate:
     name: Render templates and validate YAML
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 

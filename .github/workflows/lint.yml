@@ -12,6 +12,8 @@ jobs:
   yamllint:
     name: YAML Lint
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -28,6 +30,8 @@ jobs:
   shellcheck:
     name: ShellCheck
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -42,6 +46,8 @@ jobs:
   markdownlint:
     name: Markdown Lint
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
